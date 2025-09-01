@@ -31,6 +31,7 @@ const (
 	BindingLocation_BINDING_LOCATION_QUERY       BindingLocation = 1 // Indicates that the binding is for query parameters.
 	BindingLocation_BINDING_LOCATION_URI         BindingLocation = 2 // Indicates that the binding is for URI parameters.
 	BindingLocation_BINDING_LOCATION_BODY        BindingLocation = 3 // Indicates that the binding is for the body of the request.
+	BindingLocation_BINDING_LOCATION_HEADER      BindingLocation = 4 // Indicates that the binding is for header parameters.
 )
 
 // Enum value maps for BindingLocation.
@@ -40,12 +41,14 @@ var (
 		1: "BINDING_LOCATION_QUERY",
 		2: "BINDING_LOCATION_URI",
 		3: "BINDING_LOCATION_BODY",
+		4: "BINDING_LOCATION_HEADER",
 	}
 	BindingLocation_value = map[string]int32{
 		"BINDING_LOCATION_UNSPECIFIED": 0,
 		"BINDING_LOCATION_QUERY":       1,
 		"BINDING_LOCATION_URI":         2,
 		"BINDING_LOCATION_BODY":        3,
+		"BINDING_LOCATION_HEADER":      4,
 	}
 )
 
@@ -165,12 +168,13 @@ var File_sphere_binding_binding_proto protoreflect.FileDescriptor
 
 const file_sphere_binding_binding_proto_rawDesc = "" +
 	"\n" +
-	"\x1csphere/binding/binding.proto\x12\x0esphere.binding\x1a google/protobuf/descriptor.proto*\x84\x01\n" +
+	"\x1csphere/binding/binding.proto\x12\x0esphere.binding\x1a google/protobuf/descriptor.proto*\xa1\x01\n" +
 	"\x0fBindingLocation\x12 \n" +
 	"\x1cBINDING_LOCATION_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16BINDING_LOCATION_QUERY\x10\x01\x12\x18\n" +
 	"\x14BINDING_LOCATION_URI\x10\x02\x12\x19\n" +
-	"\x15BINDING_LOCATION_BODY\x10\x03:q\n" +
+	"\x15BINDING_LOCATION_BODY\x10\x03\x12\x1b\n" +
+	"\x17BINDING_LOCATION_HEADER\x10\x04:q\n" +
 	"\x10default_location\x12\x1f.google.protobuf.MessageOptions\x18\xc4\xe3\x94A \x01(\x0e2\x1f.sphere.binding.BindingLocationR\x0fdefaultLocation\x88\x01\x01:N\n" +
 	"\x11default_auto_tags\x12\x1f.google.protobuf.MessageOptions\x18\xc5\xe3\x94A \x03(\tR\x0fdefaultAutoTags:z\n" +
 	"\x16default_oneof_location\x12\x1d.google.protobuf.OneofOptions\x18\xce\xe3\x94A \x01(\x0e2\x1f.sphere.binding.BindingLocationR\x14defaultOneofLocation\x88\x01\x01:W\n" +
