@@ -9,10 +9,11 @@ option go_package = "github.com/go-sphere/binding/sphere/binding";
 
 enum BindingLocation {
   BINDING_LOCATION_UNSPECIFIED = 0; // Default value, should not be used.
-  BINDING_LOCATION_QUERY = 1; // Indicates that the binding is for query parameters.
-  BINDING_LOCATION_URI = 2; // Indicates that the binding is for URI parameters.
-  BINDING_LOCATION_BODY = 3; // Indicates that the binding is for the body of the request.
-  BINDING_LOCATION_HEADER = 4; // Indicates that the binding is for header parameters.
+  BINDING_LOCATION_QUERY = 100; // Indicates that the binding is for query parameters.
+  BINDING_LOCATION_URI = 200; // Indicates that the binding is for URI parameters.
+  BINDING_LOCATION_JSON = 300; // Indicates that the binding is for the body of the request.
+  BINDING_LOCATION_FORM = 301; // Indicates that the binding is for header parameters.
+  BINDING_LOCATION_HEADER = 400; // Indicates that the binding is for form parameters.
 }
 
 extend google.protobuf.MessageOptions {
