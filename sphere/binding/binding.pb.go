@@ -27,31 +27,31 @@ const (
 type BindingLocation int32
 
 const (
-	BindingLocation_BINDING_LOCATION_UNSPECIFIED BindingLocation = 0   // Default value, should not be used.
-	BindingLocation_BINDING_LOCATION_QUERY       BindingLocation = 100 // Indicates that the binding is for query parameters.
-	BindingLocation_BINDING_LOCATION_URI         BindingLocation = 200 // Indicates that the binding is for URI parameters.
-	BindingLocation_BINDING_LOCATION_JSON        BindingLocation = 300 // Indicates that the binding is for the body of the request.
-	BindingLocation_BINDING_LOCATION_FORM        BindingLocation = 301 // Indicates that the binding is for header parameters.
-	BindingLocation_BINDING_LOCATION_HEADER      BindingLocation = 400 // Indicates that the binding is for form parameters.
+	BindingLocation_BINDING_LOCATION_UNSPECIFIED BindingLocation = 0 // Default value, should not be used.
+	BindingLocation_BINDING_LOCATION_QUERY       BindingLocation = 1 // Indicates that the binding is for query parameters.
+	BindingLocation_BINDING_LOCATION_URI         BindingLocation = 2 // Indicates that the binding is for URI parameters.
+	BindingLocation_BINDING_LOCATION_JSON        BindingLocation = 3 // Indicates that the binding is for the body of the request.
+	BindingLocation_BINDING_LOCATION_FORM        BindingLocation = 4 // Indicates that the binding is for header parameters.
+	BindingLocation_BINDING_LOCATION_HEADER      BindingLocation = 5 // Indicates that the binding is for form parameters.
 )
 
 // Enum value maps for BindingLocation.
 var (
 	BindingLocation_name = map[int32]string{
-		0:   "BINDING_LOCATION_UNSPECIFIED",
-		100: "BINDING_LOCATION_QUERY",
-		200: "BINDING_LOCATION_URI",
-		300: "BINDING_LOCATION_JSON",
-		301: "BINDING_LOCATION_FORM",
-		400: "BINDING_LOCATION_HEADER",
+		0: "BINDING_LOCATION_UNSPECIFIED",
+		1: "BINDING_LOCATION_QUERY",
+		2: "BINDING_LOCATION_URI",
+		3: "BINDING_LOCATION_JSON",
+		4: "BINDING_LOCATION_FORM",
+		5: "BINDING_LOCATION_HEADER",
 	}
 	BindingLocation_value = map[string]int32{
 		"BINDING_LOCATION_UNSPECIFIED": 0,
-		"BINDING_LOCATION_QUERY":       100,
-		"BINDING_LOCATION_URI":         200,
-		"BINDING_LOCATION_JSON":        300,
-		"BINDING_LOCATION_FORM":        301,
-		"BINDING_LOCATION_HEADER":      400,
+		"BINDING_LOCATION_QUERY":       1,
+		"BINDING_LOCATION_URI":         2,
+		"BINDING_LOCATION_JSON":        3,
+		"BINDING_LOCATION_FORM":        4,
+		"BINDING_LOCATION_HEADER":      5,
 	}
 )
 
@@ -171,14 +171,14 @@ var File_sphere_binding_binding_proto protoreflect.FileDescriptor
 
 const file_sphere_binding_binding_proto_rawDesc = "" +
 	"\n" +
-	"\x1csphere/binding/binding.proto\x12\x0esphere.binding\x1a google/protobuf/descriptor.proto*\xc0\x01\n" +
+	"\x1csphere/binding/binding.proto\x12\x0esphere.binding\x1a google/protobuf/descriptor.proto*\xbc\x01\n" +
 	"\x0fBindingLocation\x12 \n" +
 	"\x1cBINDING_LOCATION_UNSPECIFIED\x10\x00\x12\x1a\n" +
-	"\x16BINDING_LOCATION_QUERY\x10d\x12\x19\n" +
-	"\x14BINDING_LOCATION_URI\x10\xc8\x01\x12\x1a\n" +
-	"\x15BINDING_LOCATION_JSON\x10\xac\x02\x12\x1a\n" +
-	"\x15BINDING_LOCATION_FORM\x10\xad\x02\x12\x1c\n" +
-	"\x17BINDING_LOCATION_HEADER\x10\x90\x03:q\n" +
+	"\x16BINDING_LOCATION_QUERY\x10\x01\x12\x18\n" +
+	"\x14BINDING_LOCATION_URI\x10\x02\x12\x19\n" +
+	"\x15BINDING_LOCATION_JSON\x10\x03\x12\x19\n" +
+	"\x15BINDING_LOCATION_FORM\x10\x04\x12\x1b\n" +
+	"\x17BINDING_LOCATION_HEADER\x10\x05:q\n" +
 	"\x10default_location\x12\x1f.google.protobuf.MessageOptions\x18\xc4\xe3\x94A \x01(\x0e2\x1f.sphere.binding.BindingLocationR\x0fdefaultLocation\x88\x01\x01:N\n" +
 	"\x11default_auto_tags\x12\x1f.google.protobuf.MessageOptions\x18\xc5\xe3\x94A \x03(\tR\x0fdefaultAutoTags:z\n" +
 	"\x16default_oneof_location\x12\x1d.google.protobuf.OneofOptions\x18\xce\xe3\x94A \x01(\x0e2\x1f.sphere.binding.BindingLocationR\x14defaultOneofLocation\x88\x01\x01:W\n" +
