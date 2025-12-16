@@ -25,8 +25,9 @@ enum BindingLocation {
   BINDING_LOCATION_UNSPECIFIED = 0;
   BINDING_LOCATION_QUERY = 1;    // HTTP query parameters
   BINDING_LOCATION_URI = 2;      // URI path parameters
-  BINDING_LOCATION_BODY = 3;     // HTTP request body
-  BINDING_LOCATION_HEADER = 4;   // HTTP headers
+  BINDING_LOCATION_JSON = 3;     // HTTP JSON body
+  BINDING_LOCATION_FORM = 4;   // HTTP form parameters
+  BINDING_LOCATION_HEADER = 5;   // HTTP headers
 }
 
 extend google.protobuf.FieldOptions {
@@ -176,5 +177,6 @@ func GetUser(c *gin.Context) {
 
 - `BINDING_LOCATION_QUERY`: For filtering, pagination, and optional parameters
 - `BINDING_LOCATION_URI`: For resource identifiers in the URL path
-- `BINDING_LOCATION_BODY`: For complex data structures and create/update operations
-- `BINDING_LOCATION_HEADER`: For metadata and authentication tokens
+- `BINDING_LOCATION_JSON`: For complex objects in the request body
+- `BINDING_LOCATION_FORM`: For simple form parameters
+- `BINDING_LOCATION_HEADER`: For HTTP headers

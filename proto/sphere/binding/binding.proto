@@ -12,8 +12,8 @@ enum BindingLocation {
   BINDING_LOCATION_QUERY = 1; // Indicates that the binding is for query parameters.
   BINDING_LOCATION_URI = 2; // Indicates that the binding is for URI parameters.
   BINDING_LOCATION_JSON = 3; // Indicates that the binding is for the body of the request.
-  BINDING_LOCATION_FORM = 4; // Indicates that the binding is for header parameters.
-  BINDING_LOCATION_HEADER = 5; // Indicates that the binding is for form parameters.
+  BINDING_LOCATION_FORM = 4; // Indicates that the binding is for form parameters.
+  BINDING_LOCATION_HEADER = 5; // Indicates that the binding is for header parameters.
 }
 
 extend google.protobuf.MessageOptions {
