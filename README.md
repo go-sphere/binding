@@ -30,20 +30,20 @@ enum BindingLocation {
   BINDING_LOCATION_HEADER = 5;   // HTTP headers
 }
 
-extend google.protobuf.FieldOptions {
-  BindingLocation location = 18534200;  // Field binding location
-  string tags = 18534210;               // Custom struct tags
-  string auto_tags = 18534220;          // Automatic tags
-}
-
 extend google.protobuf.MessageOptions {
-  BindingLocation default_location = 18534230;      // Default location for all fields
-  string default_auto_tags = 18534240;              // Default auto tags for all fields
+  optional BindingLocation default_location = 136655300;
+  repeated string default_auto_tags = 136655301;
 }
 
 extend google.protobuf.OneofOptions {
-  BindingLocation default_oneof_location = 18534250;    // Default location for oneof fields
-  string default_oneof_auto_tags = 18534260;            // Default auto tags for oneof fields
+  optional BindingLocation default_oneof_location = 136655310;
+  repeated string default_oneof_auto_tags = 136655311;
+}
+
+extend google.protobuf.FieldOptions {
+  optional BindingLocation location = 136655320;
+  repeated string tags = 136655321;
+  repeated string auto_tags = 136655322;
 }
 ```
 
@@ -92,7 +92,6 @@ message SearchUsersRequest {
 
 message DatabaseModel {
   option (sphere.binding.default_auto_tags) = "db";
-  option (sphere.binding.default_auto_tags) = "json";
   
   string name = 1;      // Will get: db:"name" json:"name"
   int64 id = 2;         // Will get: db:"id" json:"id"
