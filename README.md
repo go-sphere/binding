@@ -69,7 +69,7 @@ message UpdateUserRequest {
   int64 user_id = 1 [(sphere.binding.location) = BINDING_LOCATION_URI];
   
   // Request body
-  User user = 2; // Default: BINDING_LOCATION_BODY
+  User user = 2; // Default: BINDING_LOCATION_JSON
 }
 ```
 
