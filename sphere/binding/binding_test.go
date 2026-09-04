@@ -5,122 +5,146 @@ import (
 
 	"github.com/go-sphere/binding/sphere/binding"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
-func TestBindingLocation_Values(t *testing.T) {
+func TestBindingLocationDescriptor(t *testing.T) {
+	descriptor := binding.BindingLocation(0).Descriptor()
 	tests := []struct {
-		loc  binding.BindingLocation
-		name string
-		num  int32
+		name   protoreflect.Name
+		number protoreflect.EnumNumber
 	}{
-		{binding.BindingLocation_BINDING_LOCATION_UNSPECIFIED, "BINDING_LOCATION_UNSPECIFIED", 0},
-		{binding.BindingLocation_BINDING_LOCATION_QUERY, "BINDING_LOCATION_QUERY", 1},
-		{binding.BindingLocation_BINDING_LOCATION_URI, "BINDING_LOCATION_URI", 2},
-		{binding.BindingLocation_BINDING_LOCATION_JSON, "BINDING_LOCATION_JSON", 3},
-		{binding.BindingLocation_BINDING_LOCATION_FORM, "BINDING_LOCATION_FORM", 4},
-		{binding.BindingLocation_BINDING_LOCATION_HEADER, "BINDING_LOCATION_HEADER", 5},
+		{name: "BINDING_LOCATION_UNSPECIFIED", number: 0},
+		{name: "BINDING_LOCATION_QUERY", number: 1},
+		{name: "BINDING_LOCATION_URI", number: 2},
+		{name: "BINDING_LOCATION_JSON", number: 3},
+		{name: "BINDING_LOCATION_FORM", number: 4},
+		{name: "BINDING_LOCATION_HEADER", number: 5},
 	}
-
 	for _, tt := range tests {
-		if tt.loc.String() != tt.name {
-			t.Errorf("expected string %s, got %s", tt.name, tt.loc.String())
-		}
-		if int32(tt.loc.Number()) != tt.num {
-			t.Errorf("expected number %d, got %d", tt.num, tt.loc.Number())
-		}
-		if binding.BindingLocation_value[tt.name] != tt.num {
-			t.Errorf("value map mismatch for %s", tt.name)
-		}
-		if binding.BindingLocation_name[tt.num] != tt.name {
-			t.Errorf("name map mismatch for %d", tt.num)
-		}
+		t.Run(string(tt.name), func(t *testing.T) {
+			value := descriptor.Values().ByName(tt.name)
+			if value == nil {
+				t.Fatalf("enum value %q not found", tt.name)
+			}
+			if got := value.Number(); got != tt.number {
+				t.Errorf("number = %d, want %d", got, tt.number)
+			}
+		})
+	}
+	if got, want := descriptor.Values().Len(), len(tests); got != want {
+		t.Errorf("value count = %d, want %d", got, want)
 	}
 }
 
-func TestBindingExtensions_MessageOptions(t *testing.T) {
-	opts := &descriptorpb.MessageOptions{}
-	proto.SetExtension(opts, binding.E_DefaultLocation, binding.BindingLocation_BINDING_LOCATION_QUERY)
-	proto.SetExtension(opts, binding.E_DefaultAutoTags, []string{"json", "form"})
-
-	if !proto.HasExtension(opts, binding.E_DefaultLocation) {
-		t.Fatal("expected DefaultLocation extension to be present")
+func TestExtensionDescriptors(t *testing.T) {
+	tests := []struct {
+		name        string
+		extension   protoreflect.ExtensionType
+		fullName    protoreflect.FullName
+		number      protoreflect.FieldNumber
+		kind        protoreflect.Kind
+		cardinality protoreflect.Cardinality
+		extendee    protoreflect.FullName
+	}{
+		{"default_location", binding.E_DefaultLocation, "sphere.binding.default_location", 136655300, protoreflect.EnumKind, protoreflect.Optional, "google.protobuf.MessageOptions"},
+		{"default_auto_tags", binding.E_DefaultAutoTags, "sphere.binding.default_auto_tags", 136655301, protoreflect.StringKind, protoreflect.Repeated, "google.protobuf.MessageOptions"},
+		{"default_oneof_location", binding.E_DefaultOneofLocation, "sphere.binding.default_oneof_location", 136655310, protoreflect.EnumKind, protoreflect.Optional, "google.protobuf.OneofOptions"},
+		{"default_oneof_auto_tags", binding.E_DefaultOneofAutoTags, "sphere.binding.default_oneof_auto_tags", 136655311, protoreflect.StringKind, protoreflect.Repeated, "google.protobuf.OneofOptions"},
+		{"location", binding.E_Location, "sphere.binding.location", 136655320, protoreflect.EnumKind, protoreflect.Optional, "google.protobuf.FieldOptions"},
+		{"tags", binding.E_Tags, "sphere.binding.tags", 136655321, protoreflect.StringKind, protoreflect.Repeated, "google.protobuf.FieldOptions"},
+		{"auto_tags", binding.E_AutoTags, "sphere.binding.auto_tags", 136655322, protoreflect.StringKind, protoreflect.Repeated, "google.protobuf.FieldOptions"},
 	}
-	loc := proto.GetExtension(opts, binding.E_DefaultLocation).(binding.BindingLocation)
-	if loc != binding.BindingLocation_BINDING_LOCATION_QUERY {
-		t.Errorf("expected QUERY, got %v", loc)
-	}
-
-	tags := proto.GetExtension(opts, binding.E_DefaultAutoTags).([]string)
-	if len(tags) != 2 || tags[0] != "json" || tags[1] != "form" {
-		t.Errorf("unexpected tags: %v", tags)
-	}
-}
-
-func TestBindingExtensions_OneofOptions(t *testing.T) {
-	opts := &descriptorpb.OneofOptions{}
-	proto.SetExtension(opts, binding.E_DefaultOneofLocation, binding.BindingLocation_BINDING_LOCATION_FORM)
-	proto.SetExtension(opts, binding.E_DefaultOneofAutoTags, []string{"form"})
-
-	if !proto.HasExtension(opts, binding.E_DefaultOneofLocation) {
-		t.Fatal("expected DefaultOneofLocation extension")
-	}
-	loc := proto.GetExtension(opts, binding.E_DefaultOneofLocation).(binding.BindingLocation)
-	if loc != binding.BindingLocation_BINDING_LOCATION_FORM {
-		t.Errorf("expected FORM, got %v", loc)
-	}
-
-	tags := proto.GetExtension(opts, binding.E_DefaultOneofAutoTags).([]string)
-	if len(tags) != 1 || tags[0] != "form" {
-		t.Errorf("unexpected auto tags: %v", tags)
-	}
-}
-
-func TestBindingExtensions_FieldOptions(t *testing.T) {
-	opts := &descriptorpb.FieldOptions{}
-	proto.SetExtension(opts, binding.E_Location, binding.BindingLocation_BINDING_LOCATION_URI)
-	proto.SetExtension(opts, binding.E_Tags, []string{`validate:"required"`})
-	proto.SetExtension(opts, binding.E_AutoTags, []string{"param"})
-
-	if !proto.HasExtension(opts, binding.E_Location) {
-		t.Fatal("expected Location extension")
-	}
-	loc := proto.GetExtension(opts, binding.E_Location).(binding.BindingLocation)
-	if loc != binding.BindingLocation_BINDING_LOCATION_URI {
-		t.Errorf("expected URI, got %v", loc)
-	}
-
-	tags := proto.GetExtension(opts, binding.E_Tags).([]string)
-	if len(tags) != 1 || tags[0] != `validate:"required"` {
-		t.Errorf("unexpected tags: %v", tags)
-	}
-
-	autoTags := proto.GetExtension(opts, binding.E_AutoTags).([]string)
-	if len(autoTags) != 1 || autoTags[0] != "param" {
-		t.Errorf("unexpected auto tags: %v", autoTags)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			descriptor := tt.extension.TypeDescriptor()
+			if got := descriptor.FullName(); got != tt.fullName {
+				t.Errorf("full name = %q, want %q", got, tt.fullName)
+			}
+			if got := descriptor.Number(); got != tt.number {
+				t.Errorf("number = %d, want %d", got, tt.number)
+			}
+			if got := descriptor.Kind(); got != tt.kind {
+				t.Errorf("kind = %s, want %s", got, tt.kind)
+			}
+			if got := descriptor.Cardinality(); got != tt.cardinality {
+				t.Errorf("cardinality = %s, want %s", got, tt.cardinality)
+			}
+			if got := descriptor.ContainingMessage().FullName(); got != tt.extendee {
+				t.Errorf("extendee = %q, want %q", got, tt.extendee)
+			}
+		})
 	}
 }
 
-func TestBindingExtensions_SerializationRoundTrip(t *testing.T) {
-	orig := &descriptorpb.FieldOptions{}
-	proto.SetExtension(orig, binding.E_Location, binding.BindingLocation_BINDING_LOCATION_HEADER)
-	proto.SetExtension(orig, binding.E_Tags, []string{`header:"X-Trace-Id"`})
+func TestExtensionsWireRoundTrip(t *testing.T) {
+	tests := []struct {
+		name  string
+		input proto.Message
+		new   func() proto.Message
+	}{
+		{
+			name: "message options",
+			input: messageOptions(
+				binding.BindingLocation_BINDING_LOCATION_QUERY,
+				[]string{"json", "query"},
+			),
+			new: func() proto.Message { return &descriptorpb.MessageOptions{} },
+		},
+		{
+			name: "oneof options",
+			input: oneofOptions(
+				binding.BindingLocation_BINDING_LOCATION_FORM,
+				[]string{"form"},
+			),
+			new: func() proto.Message { return &descriptorpb.OneofOptions{} },
+		},
+		{
+			name: "field options",
+			input: fieldOptions(
+				binding.BindingLocation_BINDING_LOCATION_HEADER,
+				[]string{`validate:"required"`},
+				[]string{"header"},
+			),
+			new: func() proto.Message { return &descriptorpb.FieldOptions{} },
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			data, err := proto.Marshal(tt.input)
+			if err != nil {
+				t.Fatalf("marshal: %v", err)
+			}
+			output := tt.new()
+			if err := proto.Unmarshal(data, output); err != nil {
+				t.Fatalf("unmarshal: %v", err)
+			}
+			if !proto.Equal(output, tt.input) {
+				t.Errorf("round trip mismatch:\n got: %v\nwant: %v", output, tt.input)
+			}
+		})
+	}
+}
 
-	data, err := proto.Marshal(orig)
-	if err != nil {
-		t.Fatalf("proto.Marshal failed: %v", err)
-	}
+func messageOptions(location binding.BindingLocation, tags []string) *descriptorpb.MessageOptions {
+	options := &descriptorpb.MessageOptions{}
+	proto.SetExtension(options, binding.E_DefaultLocation, location)
+	proto.SetExtension(options, binding.E_DefaultAutoTags, tags)
+	return options
+}
 
-	parsed := &descriptorpb.FieldOptions{}
-	if err := proto.Unmarshal(data, parsed); err != nil {
-		t.Fatalf("proto.Unmarshal failed: %v", err)
-	}
+func oneofOptions(location binding.BindingLocation, tags []string) *descriptorpb.OneofOptions {
+	options := &descriptorpb.OneofOptions{}
+	proto.SetExtension(options, binding.E_DefaultOneofLocation, location)
+	proto.SetExtension(options, binding.E_DefaultOneofAutoTags, tags)
+	return options
+}
 
-	if !proto.HasExtension(parsed, binding.E_Location) {
-		t.Fatal("expected Location extension after unmarshal")
-	}
-	loc := proto.GetExtension(parsed, binding.E_Location).(binding.BindingLocation)
-	if loc != binding.BindingLocation_BINDING_LOCATION_HEADER {
-		t.Errorf("expected HEADER, got %v", loc)
-	}
+func fieldOptions(location binding.BindingLocation, tags, autoTags []string) *descriptorpb.FieldOptions {
+	options := &descriptorpb.FieldOptions{}
+	proto.SetExtension(options, binding.E_Location, location)
+	proto.SetExtension(options, binding.E_Tags, tags)
+	proto.SetExtension(options, binding.E_AutoTags, autoTags)
+	return options
 }
