@@ -76,7 +76,6 @@ message UpdateUserRequest {
 ### Advanced Example with Custom Tags
 
 ```protobuf
-```protobuf
 message SearchUsersRequest {
   // Query parameters with validation and custom tags
   string query = 1 [
@@ -93,9 +92,9 @@ message SearchUsersRequest {
 message DatabaseModel {
   option (sphere.binding.default_auto_tags) = "db";
   
-  string name = 1;      // Will get: db:"name" json:"name"
-  int64 id = 2;         // Will get: db:"id" json:"id"
-  string email = 3;     // Will get: db:"email" json:"email"
+  string name = 1;      // Will get: db:"name" json:"name,omitempty"
+  int64 id = 2;         // Will get: db:"id" json:"id,omitempty"
+  string email = 3;     // Will get: db:"email" json:"email,omitempty"
 }
 ```
 
@@ -131,7 +130,7 @@ When used with `protoc-gen-sphere-binding`, the following Go code is generated:
 ```go
 type GetUserRequest struct {
     UserId int64    `protobuf:"varint,1,opt,name=user_id" json:"-" uri:"user_id"`
-    Fields []string `protobuf:"bytes,2,rep,name=fields" json:"-" form:"fields"`
+    Fields []string `protobuf:"bytes,2,rep,name=fields" json:"-" query:"fields"`
 }
 
 // Direct usage with HTTP frameworks
@@ -150,7 +149,7 @@ func GetUser(c *gin.Context) {
 
 ### Field Level Options
 
-- `location`: Specifies the binding location (QUERY, URI, BODY)
+- `location`: Specifies the binding location (QUERY, URI, JSON, FORM, HEADER)
 - `tags`: Adds custom struct tags to the field
 - `auto_tags`: Adds automatic tags to the field
 
@@ -179,3 +178,7 @@ func GetUser(c *gin.Context) {
 - `BINDING_LOCATION_JSON`: For complex objects in the request body
 - `BINDING_LOCATION_FORM`: For simple form parameters
 - `BINDING_LOCATION_HEADER`: For HTTP headers
+- `BINDING_LOCATION_UNSPECIFIED`: Not set explicitly; falls back to the message-level `default_location`
+
+`QUERY`, `URI`, and `HEADER` are valid only on scalar and well-known scalar
+types. Complex types must use `JSON` or `FORM`.
