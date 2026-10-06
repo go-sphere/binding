@@ -37,8 +37,10 @@ const (
 type BindingLocation int32
 
 const (
-	// BINDING_LOCATION_UNSPECIFIED is the default zero value; indicates no explicit
-	// binding location is specified. Falls back to message default_location if set.
+	// BINDING_LOCATION_UNSPECIFIED is the zero value: no binding tag is added and
+	// the field keeps its standard json tag. A field without a location option
+	// inherits its oneof's or message's default; setting this value explicitly on
+	// a field overrides those defaults.
 	BindingLocation_BINDING_LOCATION_UNSPECIFIED BindingLocation = 0
 	// BINDING_LOCATION_QUERY binds the field to HTTP URL query parameters (e.g. `?name=val`).
 	// Generates `query:"<name>"` struct tag. Supported only on scalar and well-known scalar types.
@@ -166,7 +168,8 @@ var file_sphere_binding_binding_proto_extTypes = []protoimpl.ExtensionInfo{
 // Extension fields to descriptorpb.MessageOptions.
 var (
 	// default_location defines the default BindingLocation for all fields in this message
-	// that do not specify their own field-level location option.
+	// that do not specify their own field-level location option. Nested message
+	// types do not inherit it.
 	// Preconditions: Must be a valid BindingLocation enum value.
 	// Concurrency: Extension descriptors are immutable after registration in init().
 	//
@@ -174,6 +177,7 @@ var (
 	E_DefaultLocation = &file_sphere_binding_binding_proto_extTypes[0]
 	// default_auto_tags specifies tag keys (e.g. "form", "json") that should be automatically
 	// generated with the field's proto name for all fields in this message.
+	// A field or oneof that sets its own auto tags replaces this list.
 	// Preconditions: Tag keys must be non-empty and must not contain spaces or quotes.
 	// Concurrency: Slices returned by GetExtension are direct references; callers must not mutate concurrently.
 	//
@@ -183,13 +187,15 @@ var (
 
 // Extension fields to descriptorpb.OneofOptions.
 var (
-	// default_oneof_location defines the default BindingLocation for all fields within this oneof group.
+	// default_oneof_location defines the default BindingLocation for all fields within this oneof group,
+	// overriding the message's default_location.
 	// Preconditions: Must be a valid BindingLocation enum value.
 	// Concurrency: Extension descriptors are immutable after registration in init().
 	//
 	// optional sphere.binding.BindingLocation default_oneof_location = 136655310;
 	E_DefaultOneofLocation = &file_sphere_binding_binding_proto_extTypes[2]
-	// default_oneof_auto_tags specifies tag keys automatically generated for fields within this oneof group.
+	// default_oneof_auto_tags specifies tag keys automatically generated for fields within this oneof group,
+	// replacing the message's default_auto_tags.
 	// Preconditions: Tag keys must be non-empty and must not contain spaces or quotes.
 	// Concurrency: Slices returned by GetExtension are direct references; callers must not mutate concurrently.
 	//
@@ -199,7 +205,8 @@ var (
 
 // Extension fields to descriptorpb.FieldOptions.
 var (
-	// location overrides default_location for this specific field.
+	// location sets the BindingLocation of this field, overriding default_oneof_location
+	// and default_location.
 	// Preconditions: Must be a valid BindingLocation. QUERY/URI/HEADER restricted to scalar types.
 	// Concurrency: Extension descriptors are immutable after registration in init().
 	//
@@ -207,12 +214,14 @@ var (
 	E_Location = &file_sphere_binding_binding_proto_extTypes[4]
 	// tags specifies explicit Go struct tag strings to apply to the generated field
 	// (e.g. 'validate:"required,min=1"'). Each string must be valid Go struct tag syntax.
+	// A key set here replaces any tag with the same key derived from location or auto tags.
 	// Preconditions: Must conform to standard Go struct tag key:"value" syntax.
 	// Concurrency: Slices returned by GetExtension are direct references; callers must not mutate concurrently.
 	//
 	// repeated string tags = 136655321;
 	E_Tags = &file_sphere_binding_binding_proto_extTypes[5]
-	// auto_tags specifies tag keys (e.g. "param", "schema") to generate for this field using the field's name.
+	// auto_tags specifies tag keys (e.g. "param", "schema") to generate for this field using the field's
+	// proto name. It replaces any inherited default_auto_tags or default_oneof_auto_tags.
 	// Preconditions: Tag keys must be non-empty and must not contain spaces or quotes.
 	// Concurrency: Slices returned by GetExtension are direct references; callers must not mutate concurrently.
 	//
