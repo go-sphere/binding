@@ -39,8 +39,9 @@ type BindingLocation int32
 const (
 	// BINDING_LOCATION_UNSPECIFIED is the zero value: no binding tag is added and
 	// the field keeps its standard json tag. A field without a location option
-	// inherits its oneof's or message's default; setting this value explicitly on
-	// a field overrides those defaults.
+	// inherits its message's default_location, or, for a oneof member, its
+	// oneof's default_oneof_location; setting this value explicitly on a field
+	// overrides those defaults.
 	BindingLocation_BINDING_LOCATION_UNSPECIFIED BindingLocation = 0
 	// BINDING_LOCATION_QUERY binds the field to HTTP URL query parameters (e.g. `?name=val`).
 	// Generates `query:"<name>"` struct tag. Supported only on scalar and well-known scalar types.
@@ -187,8 +188,9 @@ var (
 
 // Extension fields to descriptorpb.OneofOptions.
 var (
-	// default_oneof_location defines the default BindingLocation for all fields within this oneof group,
-	// overriding the message's default_location.
+	// default_oneof_location defines the default BindingLocation for all fields within this oneof group.
+	// A oneof does not inherit the message's default_location: without this option its members bind
+	// through the JSON body.
 	// Preconditions: Must be a valid BindingLocation enum value.
 	// Concurrency: Extension descriptors are immutable after registration in init().
 	//
