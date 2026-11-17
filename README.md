@@ -108,7 +108,7 @@ deps:
   - buf.build/go-sphere/binding
 ```
 
-Configure code generation in `buf.gen.yaml`:
+Configure Go code generation in `buf.gen.yaml`:
 
 ```yaml
 version: v2
@@ -118,9 +118,23 @@ managed:
     - file_option: go_package_prefix
       module: buf.build/go-sphere/binding
 plugins:
-  - local: protoc-gen-sphere-binding
+  - local: protoc-gen-go
     out: api
     opt: paths=source_relative
+```
+
+Because `protoc-gen-sphere-binding` modifies the `.pb.go` files emitted by `protoc-gen-go` in place, run it in a second pass (for example via `buf.binding.yaml` with `buf generate --template buf.binding.yaml`) after `buf generate`:
+
+```yaml
+version: v2
+managed:
+  enabled: true
+plugins:
+  - local: protoc-gen-sphere-binding
+    out: api
+    opt:
+      - paths=source_relative
+      - out=api
 ```
 
 ## Generated Code Usage
@@ -139,6 +153,9 @@ func GetUser(c *gin.Context) {
     if err := c.ShouldBindUri(&req); err != nil {
         // Handle error
     }
+    // Note: Gin's ShouldBindQuery reads `form` tags; pass
+    // `binding_aliases=query=form` to protoc-gen-sphere-binding when calling
+    // c.ShouldBindQuery directly, or use ginx.FromGin(c).BindQuery(&req).
     if err := c.ShouldBindQuery(&req); err != nil {
         // Handle error
     }
@@ -149,19 +166,19 @@ func GetUser(c *gin.Context) {
 
 ### Field Level Options
 
-- `location`: Specifies the binding location (QUERY, URI, JSON, FORM, HEADER)
+- `location`: Specifies the binding location (QUERY, URI, JSON, FORM, HEADER, UNSPECIFIED)
 - `tags`: Adds custom struct tags to the field
 - `auto_tags`: Adds automatic tags to the field
 
 ### Message Level Options
 
-- `default_location`: Sets default binding location for all fields in a message
-- `default_auto_tags`: Adds default tags to all fields in a message
+- `default_location`: Sets default binding location for ordinary fields (including `proto3 optional` fields) in a message. Real `oneof`s and nested message types do not inherit it.
+- `default_auto_tags`: Adds default tags to all fields in a message (inherited by `oneof`s unless overridden, not by nested message types)
 
 ### Oneof Level Options
 
-- `default_oneof_location`: Sets default binding location for oneof fields
-- `default_oneof_auto_tags`: Adds default tags to oneof fields
+- `default_oneof_location`: Sets default binding location for fields in a `oneof` (real `oneof`s do not inherit message `default_location`, so members bind via JSON unless this or a field `location` is set)
+- `default_oneof_auto_tags`: Adds default tags to fields in a `oneof`
 
 ## Best Practices
 
@@ -176,9 +193,12 @@ func GetUser(c *gin.Context) {
 - `BINDING_LOCATION_QUERY`: For filtering, pagination, and optional parameters
 - `BINDING_LOCATION_URI`: For resource identifiers in the URL path
 - `BINDING_LOCATION_JSON`: For complex objects in the request body
-- `BINDING_LOCATION_FORM`: For simple form parameters
+- `BINDING_LOCATION_FORM`: For form or multipart/form-data body parameters
 - `BINDING_LOCATION_HEADER`: For HTTP headers
-- `BINDING_LOCATION_UNSPECIFIED`: Not set explicitly; falls back to the message-level `default_location`
+- `BINDING_LOCATION_UNSPECIFIED`: Zero value (no binding tag added; field keeps its standard `json` tag). When `location` is omitted on a field, ordinary fields inherit message `default_location` and `oneof` members inherit `default_oneof_location` (not `default_location`); setting `BINDING_LOCATION_UNSPECIFIED` explicitly on a field overrides those defaults.
 
-`QUERY`, `URI`, and `HEADER` are valid only on scalar and well-known scalar
-types. Complex types must use `JSON` or `FORM`.
+`QUERY`, `URI`, and `HEADER` accept scalar and enum types only (including
+repeated or `optional` scalars and enums). `bytes`, `map`, and message
+types—including well-known wrappers such as `google.protobuf.Timestamp`,
+`google.protobuf.Duration`, and `wrapperspb.*Value`—are rejected at
+code-generation time and must use `JSON` or `FORM`.

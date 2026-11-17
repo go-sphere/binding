@@ -23,10 +23,13 @@
 //	  ];
 //	}
 //
-// A field's location comes from, in order of precedence, its own location
-// option, its oneof's default_oneof_location, then its message's
-// default_location. QUERY, URI, and HEADER apply only to scalar fields and
-// well-known scalar wrappers such as google.protobuf.Timestamp.
+// Regular fields (including proto3 optional fields) use their own location
+// option or fall back to the message's default_location; nested messages do not
+// inherit it. Real oneof members do not inherit default_location either—they
+// use their own location option, else default_oneof_location, else the JSON
+// body. QUERY, URI, and HEADER accept scalar and enum types only (not bytes,
+// maps, or message types including well-known wrappers such as
+// google.protobuf.Timestamp, google.protobuf.Duration, or wrapperspb.*Value).
 //
 // # Reading options in Go
 //

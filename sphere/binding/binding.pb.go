@@ -29,7 +29,9 @@ const (
 // protoc-gen-sphere code generators to produce Go struct tags and binder calls.
 //
 // Preconditions: Used during Protobuf schema definition. QUERY, URI, and HEADER
-// locations are valid only on scalar types (numeric, string, bool) and well-known scalar types.
+// locations are valid only on scalar (numeric, string, bool) and enum types
+// (not bytes, maps, or message types including well-known wrappers such as
+// google.protobuf.Timestamp, google.protobuf.Duration, or wrapperspb.*Value).
 // Concurrency: Enum values are immutable and safe for concurrent use.
 // Lifecycle: Handled statically at code generation time; descriptors are registered at init().
 // Error semantics: Invalid locations for complex types are rejected at code-generation time.
@@ -44,10 +46,12 @@ const (
 	// overrides those defaults.
 	BindingLocation_BINDING_LOCATION_UNSPECIFIED BindingLocation = 0
 	// BINDING_LOCATION_QUERY binds the field to HTTP URL query parameters (e.g. `?name=val`).
-	// Generates `query:"<name>"` struct tag. Supported only on scalar and well-known scalar types.
+	// Generates `query:"<name>"` struct tag. Supported only on scalar and enum types
+	// (not message types, including well-known wrappers).
 	BindingLocation_BINDING_LOCATION_QUERY BindingLocation = 1
 	// BINDING_LOCATION_URI binds the field to URL path/route parameters (e.g. `/users/:id`).
-	// Generates `uri:"<name>"` struct tag. Supported only on scalar and well-known scalar types.
+	// Generates `uri:"<name>"` struct tag. Supported only on scalar and enum types
+	// (not message types, including well-known wrappers).
 	BindingLocation_BINDING_LOCATION_URI BindingLocation = 2
 	// BINDING_LOCATION_JSON binds the field to the HTTP request JSON body.
 	// Preserves standard `json:"<name>"` tag.
@@ -56,7 +60,8 @@ const (
 	// Generates `form:"<name>"` struct tag.
 	BindingLocation_BINDING_LOCATION_FORM BindingLocation = 4
 	// BINDING_LOCATION_HEADER binds the field to HTTP request headers.
-	// Generates `header:"<name>"` struct tag. Supported only on scalar and well-known scalar types.
+	// Generates `header:"<name>"` struct tag. Supported only on scalar and enum types
+	// (not message types, including well-known wrappers).
 	BindingLocation_BINDING_LOCATION_HEADER BindingLocation = 5
 )
 
@@ -169,8 +174,8 @@ var file_sphere_binding_binding_proto_extTypes = []protoimpl.ExtensionInfo{
 // Extension fields to descriptorpb.MessageOptions.
 var (
 	// default_location defines the default BindingLocation for all fields in this message
-	// that do not specify their own field-level location option. Nested message
-	// types do not inherit it.
+	// that do not specify their own field-level location option. Neither real oneofs
+	// nor nested message types inherit it (proto3 optional fields are treated as ordinary fields).
 	// Preconditions: Must be a valid BindingLocation enum value.
 	// Concurrency: Extension descriptors are immutable after registration in init().
 	//
@@ -209,7 +214,7 @@ var (
 var (
 	// location sets the BindingLocation of this field, overriding default_oneof_location
 	// and default_location.
-	// Preconditions: Must be a valid BindingLocation. QUERY/URI/HEADER restricted to scalar types.
+	// Preconditions: Must be a valid BindingLocation. QUERY/URI/HEADER restricted to scalar and enum types.
 	// Concurrency: Extension descriptors are immutable after registration in init().
 	//
 	// optional sphere.binding.BindingLocation location = 136655320;
